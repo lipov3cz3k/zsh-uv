@@ -12,3 +12,4 @@ Thumbs.db
 
 # do not commit the generated files
 completions/_uv
+completions/.uv-version

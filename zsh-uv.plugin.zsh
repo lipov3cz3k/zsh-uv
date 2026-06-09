@@ -18,9 +18,13 @@ local _version_file="${COMPLETIONS_DIR}/.uv-version"
 
 # Generate completion only when missing or uv version changed, to avoid
 # invalidating completion cache (e.g. zimfw .dat mtime check) on every load.
-if [[ ! -f "$COMPLETIONS_DIR/_uv" || "$_uv_version" != "$(cat "$_version_file" 2>/dev/null)" ]]; then
-    uv generate-shell-completion zsh 2>/dev/null >| "$COMPLETIONS_DIR/_uv"
-    print -r -- "$_uv_version" >| "$_version_file"
+local _stored_version=""
+[[ -f "$_version_file" ]] && _stored_version="$(<"$_version_file")"
+
+if [[ ! -f "$COMPLETIONS_DIR/_uv" || "$_uv_version" != "$_stored_version" ]]; then
+    if uv generate-shell-completion zsh 2>/dev/null >| "$COMPLETIONS_DIR/_uv" && [[ -s "$COMPLETIONS_DIR/_uv" ]]; then
+        print -r -- "$_uv_version" >| "$_version_file"
+    fi
 fi
 
 # If the completion file still does not exist (generation failed), then we need
